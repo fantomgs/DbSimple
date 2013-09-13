@@ -1,0 +1,11 @@
+{
+    "name": "orbisnull/dbsimple",
+    "description": "DbSimple Sql Library",
+    "license": [
+        "GPL-3.0+"
+    ],
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-0": {"DbSimple": "src/"}
+    }
+}

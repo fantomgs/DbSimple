@@ -100,7 +100,7 @@ SYNOPSIS
 Listing 1: Connect to DBMS
 
 require_once "DbSimple/Generic.php";
-$DB = DbSimple_Generic::connect("pgsql://login:password@host/database");
+$DB = Generic::connect("pgsql://login:password@host/database");
 
 OR
 
@@ -304,7 +304,7 @@ foreach ($array as $item) {
 Listing 21: Error handling
 
 // File connect.php
-$DB = DbSimple_Generic::connect('mysql://test:test@localhost1/non-existed-db');
+$DB = Generic::connect('mysql://test:test@localhost1/non-existed-db');
 $DB->setErrorHandler('databaseErrorHandler');
 
 function databaseErrorHandler($message, $info)
