@@ -1,3 +1,7 @@
+With composer use:
+require: "orbisnull/dbsimple": "dev-master"
+
+
 DbSimple: Simplest but powerful interface to work with various relational databases.
 (C) Dmitry Koterov, http://en.dklab.ru/lib/DbSimple/
 
