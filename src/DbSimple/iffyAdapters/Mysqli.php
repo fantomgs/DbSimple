@@ -16,13 +16,15 @@
  *
  * @version 2.x $Id: Mysqli.php 247 2008-08-18 21:17:08Z dk $
  */
-require_once dirname(__FILE__) . '/Database.php';
 
+namespace DbSimple;
+
+use DbSimple\Mysqli\Blob;
 
 /**
  * Database class for MySQL.
  */
-class DbSimple_Mysqli extends Database
+class Mysqli extends Database
 {
     var $link;
 
@@ -30,7 +32,7 @@ class DbSimple_Mysqli extends Database
      * constructor(string $dsn)
      * Connect to MySQL server.
      */
-    function DbSimple_Mysqli($dsn)
+    function __construct($dsn)
     {
         
         if (!is_callable("mysqli_connect"))
@@ -68,7 +70,7 @@ class DbSimple_Mysqli extends Database
 
     protected function _performNewBlob($blobid=null)
     {
-        return new _Mysqli_BlobInteface($this, $blobid);
+        return new Blob($this, $blobid);
     }
 
 
@@ -177,40 +179,3 @@ class DbSimple_Mysqli extends Database
 	    }
     }
 }
-
-
-class _Mysqli_BlobInteface implements Blob
-{
-    // MySQL does not support separate BLOB fetching.
-    private $blobdata = null;
-    private $curSeek = 0;
-
-    public function __construct(&$database, $blobdata=null)
-    {
-        $this->blobdata = $blobdata;
-        $this->curSeek = 0;
-    }
-
-    public function read($len)
-    {
-        $p = $this->curSeek;
-        $this->curSeek = min($this->curSeek + $len, strlen($this->blobdata));
-        return substr($this->blobdata, $p, $len);
-    }
-
-    public function write($data)
-    {
-        $this->blobdata .= $data;
-    }
-
-    public function close()
-    {
-        return $this->blobdata;
-    }
-
-    public function length()
-    {
-        return strlen($this->blobdata);
-    }
-}
-?>

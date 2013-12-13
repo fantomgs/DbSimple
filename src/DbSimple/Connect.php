@@ -19,12 +19,12 @@ namespace DbSimple;
  * @method string escape(mixed $s, bool $isIdent=false)
  * @method SubQuery subquery(string $query, $argOrArgsByComma)
  */
-class DbSimple_Connect
+class Connect
 {
-	/** @var DbSimple_Generic_Database База данных */
-	protected $DbSimple;
+	/** @var Database База данных */
+	protected $dbSimple;
 	/** @var string DSN подключения */
-	protected $DSN;
+	protected $dsn;
 	/** @var string Тип базы данных */
 	protected $shema;
 	/** @var array Что выставить при коннекте */
@@ -42,8 +42,8 @@ class DbSimple_Connect
 	 */
 	public function __construct($dsn)
 	{
-		$this->DbSimple = null;
-		$this->DSN      = $dsn;
+		$this->dbSimple = null;
+		$this->dsn      = $dsn;
 		$this->init     = array();
 		$this->shema    = ucfirst(substr($dsn, 0, strpos($dsn, ':')));
 	}
@@ -75,9 +75,9 @@ class DbSimple_Connect
 	 */
 	public function __call($method, $params)
 	{
-		if ($this->DbSimple === null)
-			$this->connect($this->DSN);
-		return call_user_func_array(array(&$this->DbSimple, $method), $params);
+		if ($this->dbSimple === null)
+			$this->connect($this->dsn);
+		return call_user_func_array(array($this->dbSimple, $method), $params);
 	}
 
 	/**
@@ -86,11 +86,11 @@ class DbSimple_Connect
 	 */
 	public function selectPage(&$total, $query)
 	{
-		if ($this->DbSimple === null)
-			$this->connect($this->DSN);
+		if ($this->dbSimple === null)
+			$this->connect($this->dsn);
 		$args = func_get_args();
 		$args[0] = &$total;
-		return call_user_func_array(array(&$this->DbSimple, 'selectPage'), $args);
+		return call_user_func_array(array(&$this->dbSimple, 'selectPage'), $args);
 	}
 
 	/**
@@ -106,20 +106,20 @@ class DbSimple_Connect
 			$this->errorHandler('Невозможно загрузить драйвер базы данных', $parsed);
 		$this->shema = ucfirst($parsed['scheme']);
 		require_once dirname(__FILE__).'/'.$this->shema.'.php';
-		$class = 'DbSimple_'.$this->shema;
-		$this->DbSimple = new $class($parsed);
-		$this->errmsg = &$this->DbSimple->errmsg;
-		$this->error = &$this->DbSimple->error;
+		$class = $this->shema;
+		$this->dbSimple = new $class($parsed);
+		$this->errmsg = &$this->dbSimple->errmsg;
+		$this->error = &$this->dbSimple->error;
 		$prefix = isset($parsed['prefix']) ? $parsed['prefix'] : ($this->_identPrefix ? $this->_identPrefix : false);
 		if ($prefix)
-			$this->DbSimple->setIdentPrefix($prefix);
-		if ($this->_cachePrefix) $this->DbSimple->setCachePrefix($this->_cachePrefix);
-		if ($this->_cacher) $this->DbSimple->setCacher($this->_cacher);
-		if ($this->_logger) $this->DbSimple->setLogger($this->_logger);
-		$this->DbSimple->setErrorHandler($this->errorHandler!==null ? $this->errorHandler : array(&$this, 'errorHandler'));
+			$this->dbSimple->setIdentPrefix($prefix);
+		if ($this->_cachePrefix) $this->dbSimple->setCachePrefix($this->_cachePrefix);
+		if ($this->_cacher) $this->dbSimple->setCacher($this->_cacher);
+		if ($this->_logger) $this->dbSimple->setLogger($this->_logger);
+		$this->dbSimple->setErrorHandler($this->errorHandler!==null ? $this->errorHandler : array(&$this, 'errorHandler'));
 		//выставление переменных
 		foreach($this->init as $query)
-			call_user_func_array(array(&$this->DbSimple, 'query'), $query);
+			call_user_func_array(array($this->dbSimple, 'query'), $query);
 		$this->init = array();
 	}
 
@@ -149,8 +149,8 @@ class DbSimple_Connect
 	public function addInit($query)
 	{
 		$args = func_get_args();
-		if ($this->DbSimple !== null)
-			return call_user_func_array(array(&$this->DbSimple, 'query'), $args);
+		if ($this->dbSimple !== null)
+			return call_user_func_array(array(&$this->dbSimple, 'query'), $args);
 		$this->init[] = $args;
 	}
 
@@ -169,8 +169,8 @@ class DbSimple_Connect
 	{
 		$prev = $this->errorHandler;
 		$this->errorHandler = $handler;
-		if ($this->DbSimple)
-			$this->DbSimple->setErrorHandler($handler);
+		if ($this->dbSimple)
+			$this->dbSimple->setErrorHandler($handler);
 		return $prev;
 	}
 
@@ -190,8 +190,8 @@ class DbSimple_Connect
 	{
 		$prev = $this->_logger;
 		$this->_logger = $logger;
-		if ($this->DbSimple)
-			$this->DbSimple->setLogger($logger);
+		if ($this->dbSimple)
+			$this->dbSimple->setLogger($logger);
 		return $prev;
 	}
 
@@ -204,8 +204,8 @@ class DbSimple_Connect
 	{
 		$prev = $this->_cacher;
 		$this->_cacher = $cacher;
-		if ($this->DbSimple)
-			$this->DbSimple->setCacher($cacher);
+		if ($this->dbSimple)
+			$this->dbSimple->setCacher($cacher);
 		return $prev;
 	}
 
@@ -217,8 +217,8 @@ class DbSimple_Connect
 	{
 		$old = $this->_identPrefix;
 		if ($prx !== null) $this->_identPrefix = $prx;
-		if ($this->DbSimple)
-			$this->DbSimple->setIdentPrefix($prx);
+		if ($this->dbSimple)
+			$this->dbSimple->setIdentPrefix($prx);
 		return $old;
 	}
 
@@ -230,8 +230,8 @@ class DbSimple_Connect
 	{
 		$old = $this->_cachePrefix;
 		if ($prx !== null) $this->_cachePrefix = $prx;
-		if ($this->DbSimple)
-			$this->DbSimple->setCachePrefix($prx);
+		if ($this->dbSimple)
+			$this->dbSimple->setCachePrefix($prx);
 		return $old;
 	}
 

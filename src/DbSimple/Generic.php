@@ -72,23 +72,17 @@ class Generic
      * Choose database driver according to DSN. Return new instance
      * of this driver.
      */
-    function connect($dsn)
+    public static function connect($dsn)
     {
         // Load database driver and create its instance.
-        $parsed = Generic::parseDSN($dsn);
+        $parsed = self::parseDSN($dsn);
         if (!$parsed) {
             $dummy = null;
             return $dummy;
         }
-        $class = 'DbSimple_'.ucfirst($parsed['scheme']);
+        $class = ucfirst($parsed['scheme']);
         if (!class_exists($class)) {
-            $file = dirname(__FILE__).'/'.ucfirst($parsed['scheme']). ".php";
-            if (is_file($file)) {
-                require_once($file);
-            } else {
-                trigger_error("Error loading database driver: no file $file", E_USER_ERROR);
-                return null;
-            }
+            throw new \LogicException("Error loading database driver: no class $class");
         }
         $object = new $class($parsed);
         if (isset($parsed['ident_prefix'])) {
@@ -104,7 +98,7 @@ class Generic
      * Parse a data source name.
      * See parse_url() for details.
      */
-    function parseDSN($dsn)
+    public static function parseDSN($dsn)
     {
         if (is_array($dsn)) return $dsn;
         $parsed = parse_url($dsn);
@@ -118,5 +112,3 @@ class Generic
         return $parsed;
     }
 }
-
-?>

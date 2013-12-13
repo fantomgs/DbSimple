@@ -15,16 +15,17 @@
  *
  * @version 2.x $Id$
  */
-require_once dirname(__FILE__) . '/Database.php';
+
+namespace DbSimple;
 
 /**
  * Database class for MySQL.
  */
-class DbSimple_Mypdo extends Database
+class MyPdo extends Database
 {
 	private $link;
 
-	public function DbSimple_Mypdo($dsn)
+	public function __construct($dsn)
 	{
 		$base = preg_replace('{^/}s', '', $dsn['path']);
 		if (!class_exists('PDO'))
@@ -140,5 +141,3 @@ class DbSimple_Mypdo extends Database
 	}
 
 }
-
-?>

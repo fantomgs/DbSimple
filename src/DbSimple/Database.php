@@ -86,6 +86,29 @@ if (!defined('DBSIMPLE_PARENT_KEY'))
  */
 abstract class Database extends LastError
 {
+    // Identifiers prefix (used for ?_ placeholder).
+    private $_identPrefix = '';
+
+    // Queries statistics.
+    private $_statistics = array(
+        'time'  => 0,
+        'count' => 0,
+    );
+
+    private $_cachePrefix = '';
+    private $_className = '';
+
+    private $_logger = null;
+    private $_cacher = null;
+    private $_placeholderArgs, $_placeholderNativeArgs, $_placeholderCache=array();
+    private $_placeholderNoValueFound;
+
+    /**
+     * When string representation of row (in characters) is greater than this,
+     * row data will not be logged.
+     */
+    private $MAX_LOG_ROW_LEN = 128;
+
     /**
      * Public methods.
      */
@@ -1148,30 +1171,6 @@ abstract class Database extends LastError
 
         $this->_logQuery($log, true);
     }
-
-
-    // Identifiers prefix (used for ?_ placeholder).
-    private $_identPrefix = '';
-
-    // Queries statistics.
-    private $_statistics = array(
-        'time'  => 0,
-        'count' => 0,
-    );
-
-    private $_cachePrefix = '';
-    private $_className = '';
-
-    private $_logger = null;
-    private $_cacher = null;
-    private $_placeholderArgs, $_placeholderNativeArgs, $_placeholderCache=array();
-    private $_placeholderNoValueFound;
-
-    /**
-     * When string representation of row (in characters) is greater than this,
-     * row data will not be logged.
-    */
-    private $MAX_LOG_ROW_LEN = 128;
 }
 
 
