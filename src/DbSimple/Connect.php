@@ -106,7 +106,7 @@ class Connect
 			$this->errorHandler('Невозможно загрузить драйвер базы данных', $parsed);
 		$this->shema = ucfirst($parsed['scheme']);
 		require_once dirname(__FILE__).'/'.$this->shema.'.php';
-		$class = $this->shema;
+		$class = __NAMESPACE__.'\\'.$this->shema;
 		$this->dbSimple = new $class($parsed);
 		$this->errmsg = &$this->dbSimple->errmsg;
 		$this->error = &$this->dbSimple->error;
