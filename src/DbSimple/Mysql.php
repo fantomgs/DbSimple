@@ -21,7 +21,7 @@ namespace DbSimple;
 /**
  * Database class for MySQL.
  */
-class MyPdo extends Database
+class Mysql extends Database
 {
 	private $link;
 
@@ -32,12 +32,12 @@ class MyPdo extends Database
 			return $this->_setLastError("-1", "PDO extension is not loaded", "PDO");
 
 		try {
-			$this->link = new PDO('mysql:host='.$dsn['host'].(empty($dsn['port'])?'':';port='.$dsn['port']).';dbname='.$base,
+			$this->link = new \PDO('mysql:host='.$dsn['host'].(empty($dsn['port'])?'':';port='.$dsn['port']).';dbname='.$base,
 				$dsn['user'], isset($dsn['pass'])?$dsn['pass']:'', array(
-					PDO::ATTR_ERRMODE => PDO::ERRMODE_SILENT,
-					PDO::ATTR_PERSISTENT => isset($dsn['persist']) && $dsn['persist'],
-					PDO::ATTR_TIMEOUT => isset($dsn['timeout']) && $dsn['timeout'] ? $dsn['timeout'] : 0,
-					PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES '.(isset($dsn['enc']) ? $dsn['enc'] : 'UTF8'),
+					\PDO::ATTR_ERRMODE => \PDO::ERRMODE_SILENT,
+					\PDO::ATTR_PERSISTENT => isset($dsn['persist']) && $dsn['persist'],
+					\PDO::ATTR_TIMEOUT => isset($dsn['timeout']) && $dsn['timeout'] ? $dsn['timeout'] : 0,
+					\PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES '.(isset($dsn['enc']) ? $dsn['enc'] : 'UTF8'),
 				));
 		} catch (PDOException $e) {
 			$this->_setLastError($e->getCode() , $e->getMessage(), 'new PDO');
@@ -92,7 +92,7 @@ class MyPdo extends Database
 		if ($p->columnCount()==0)
 			return $p->rowCount();
 		//Если у нас в запросе есть хотя-бы одна колонка - это по любому будет select
-		$p->setFetchMode(PDO::FETCH_ASSOC);
+		$p->setFetchMode(\PDO::FETCH_ASSOC);
 		$res = $p->fetchAll();
 		$p->closeCursor();
 		return $res;
